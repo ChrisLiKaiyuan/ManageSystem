@@ -6,6 +6,7 @@ HDUHelp 二面的小项目
 数据库可在`SETTINGS`更改
 
 运行前要执行`sh init.sh`初始化从数据库，同时初始化一个管理员账户
+使用命令`python manage.py runserver 0.0.0.0:8080`来启动
 
 > `/admin/` 为管理员登录页面，因为没写用户的`app`，所以直接把`admin`放出来吧
 >
