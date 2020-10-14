@@ -1,0 +1,5 @@
+Django
+django_rest_swagger
+djangorestframework
+django-cors-headers
+mysqlclient
