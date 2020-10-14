@@ -1,2 +1,5 @@
 db.sqlite3
 .idea/
+student/migrations/
+student/__pycache__/
+ManageSystem/__pycache__/
