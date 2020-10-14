@@ -83,6 +83,19 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'USER': 'root',
+#         'PASSWORD': '123456',
+#         'NAME': 'manage',
+#         'HOST': 'manage_database',
+#         'PORT': '3306',
+#         'OPTIONS': {'charset': 'utf8mb4'}
+#
+#     }
+# }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
