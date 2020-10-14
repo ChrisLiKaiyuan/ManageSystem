@@ -1,24 +1,17 @@
-from django.shortcuts import render
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
-from ManageSystem.utils import CustomException, ERROR_MESSAGE, StandardResultsSetPagination
-from ManageSystem import settings
-from .serializer import CreateInfoSerializer, GetInfoListSerializer, InfoSerializer
+from ManageSystem.utils import StandardResultsSetPagination
+from .serializer import CreateInfoSerializer, GetInfoListSerializer, InfoSerializer, SearchInfoSerializer, \
+    DutyInfoSerializer
 from .models import Information
-from django.core.mail import send_mail
-import requests
-import json
-import threading
+
 
 # Create your views here.
 class CreateInfoView(CreateAPIView):
     serializer_class = CreateInfoSerializer
     queryset = Information.objects.all()
 
-    # 验证码
     def post(self, request, *args, **kwargs):
         number = request.data.get("number")
         print(number)
@@ -48,9 +41,57 @@ class InfoView(RetrieveUpdateDestroyAPIView):
         return super(InfoView, self).put(request, *args, **kwargs)
 
 
-class SearchInfoView(ListAPIView):
-    serializer_class = InfoSerializer
-    permission_classes = (IsAuthenticated,)
+class SearchInfoView(GenericAPIView):
+    serializer_class = SearchInfoSerializer
     queryset = Information.objects.all()
-    filter_backends = (SearchFilter,)
-    search_fields = ('number', 'name', 'domb', 'domr')
+
+    def post(self, request):
+        number = request.POST.get("number")
+        name = request.POST.get("name")
+        domb = request.POST.get("domb")
+        domr = request.POST.get("domr")
+        if number and name and domb and domr:
+            data = Information.objects.filter(number=number, name=name, domb=domb, domr=domr)
+            if data:
+                students = Information.objects.filter(domb=domb, domr=domr).values()
+                return Response(data=students)
+            else:
+                return Response(data={"Error": "信息错误或信息未完善！"})
+        else:
+            return Response(data={"Error": "请填写完整信息"})
+
+
+def filt(dictionary):
+    ret = []
+    for d in dictionary:
+        d = {"name": d["name"], "duty": d["duty"]}
+        ret.append(d)
+    return ret
+
+
+class DutyInfoView(GenericAPIView):
+    serializer_class = DutyInfoSerializer
+    queryset = Information.objects.all()
+
+    def post(self, request):
+        domb = request.POST.get("domb")
+        domr = request.POST.get("domr")
+        duty = request.POST.get("duty")
+        if domb and domr and duty:
+            data = Information.objects.filter(domb=domb, domr=domr, duty=duty)
+            if data:
+                students = Information.objects.filter(domb=domb, domr=domr, duty=duty).values()
+                students = filt(students)
+                return Response(data=students)
+            else:
+                return Response(data={"Error": "信息错误或信息未完善！"})
+        elif domb and domr:
+            data = Information.objects.filter(domb=domb, domr=domr)
+            if data:
+                students = Information.objects.filter(domb=domb, domr=domr).values()
+                students = filt(students)
+                return Response(data=students)
+            else:
+                return Response(data={"Error": "信息错误或信息未完善！"})
+        else:
+            return Response(data={"Error": "请填写完整信息"})

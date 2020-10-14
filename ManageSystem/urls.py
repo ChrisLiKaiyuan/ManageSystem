@@ -24,11 +24,12 @@ schema_view = get_schema_view(title='Users API', renderer_classes=[OpenAPIRender
 
 urlpatterns = [
     path('api/student/', include('student.urls')),
+    # 没写用户模块，就把admin放出来
+    path('admin/', admin.site.urls),
     # re_path('^$', TemplateView.as_view(template_name="index.html"))
 ]
 
-if settings.DEBUG is True:
-    urlpatterns += ([
-        path('admin/', admin.site.urls),
-        path('docs/', schema_view)
-    ])
+# if settings.DEBUG is True:
+#     urlpatterns += ([
+#         path('admin/', admin.site.urls)
+#     ])
